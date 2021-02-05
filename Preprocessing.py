@@ -6,9 +6,9 @@ import pickle
 
 df = pd.read_csv("housing.csv")
 
-df1 = df[df.ocean_proximity != "ISLAND"]; df1=df
+df1 = df[df.ocean_proximity != "ISLAND"];
 df2 =  pd.get_dummies(df1.ocean_proximity, prefix='ocean_proximity')
-df1 = df1.drop(["ocean_proximity"],axis=1); df_encoded = df1
+df1 = df1.drop(["ocean_proximity"],axis=1);
 df_encoded = pd.concat([df1,df2],axis=1)
 
 df_encoded["Bedrooom_PerHouseHold"] = df_encoded["total_bedrooms"] / df_encoded["households"]

@@ -82,13 +82,13 @@ class MultiP():
 
     def backProp(self,error):
 
-        grad_3=error*self.sigmoid_derivative(self.y3,"sigmoid")       #çıkış katmanı yerel gradyeni
+        grad_3=error*self.act_derivative(self.y3, "sigmoid")       #çıkış katmanı yerel gradyeni
         self.grad_3 = grad_3
         w3=(self.w3.T)[:-1,:]       # gradyen hesabı için kullanılacak ağırlık matrisinde bias satırı çıkarıldı ve transpoze edildi.
-        grad_2=np.dot(w3,grad_3)* self.sigmoid_derivative(self.y2,"relu")      #çıkış'tan önceki katmanın yerel gradyeni
+        grad_2=np.dot(w3,grad_3)* self.act_derivative(self.y2, "relu")      #çıkış'tan önceki katmanın yerel gradyeni
         self.grad_2 = grad_2
         w2 = (self.w2.T)[:-1, :]    # gradyen hesabı için kullanılacak ağırlık matrisinde bias satırı çıkarıldı ve transpoze edildi.
-        grad_1 = np.dot(w2, grad_2) * self.sigmoid_derivative(self.y1,"relu")      # giriş yerel gradyeni
+        grad_1 = np.dot(w2, grad_2) * self.act_derivative(self.y1, "relu")      # giriş yerel gradyeni
         self.grad_1=grad_1
 
     def gradDescent(self,lr):
@@ -114,7 +114,7 @@ class MultiP():
                 self.backProp(error)        # geri yayılım ile yerel gradyen hesapları
                 self.gradDescent(lr)       # grad Derscent ile ağırlık güncelleme
 
-                toplam_error += self.meanSE(target, out)
+                toplam_error += (target-out)**2
             ort_kareHata = toplam_error / X.shape[0]
             if((i+1)%10==0):
                 print("Eğitim için Ortalama Kare Hata: {}, iterasyon sayısı: {}".format(ort_kareHata, i + 1))
@@ -132,15 +132,15 @@ class MultiP():
             y = np.maximum(x,0)
         return y
 
-    def sigmoid_derivative(self, x, act_dx):
+    def act_derivative(self, x, act_dx):
         self.act_dx=act_dx
         if self.act_dx=="sigmoid":
             y = x * (1.0 - x)
         elif self.act_dx =="tanh":
             y= 1 - x**2
         elif self.act_dx=="relu":
-            y=1
+            y=np.where(x>0,1,0)
         return y
 
     def meanSE(self, hedef, cıkıs):
-        return np.average(0.5*(hedef - cıkıs) ** 2)
+        return np.average(1*(hedef - cıkıs) ** 2)
