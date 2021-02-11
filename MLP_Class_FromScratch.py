@@ -20,6 +20,8 @@ class MultiP():
             temp3=self.w2[deactivated2,:]; temp4=self.w3[:,deactivated2]
             self.w1[deactivated1,:], self.w2[:,deactivated1] = 0,0
             self.w2[deactivated2,:], self.w3[:,deactivated2] = 0,0
+            # ihmal edilecek olan nöronlar belirlendi ve bağlı oldukları ağırlıklar sıfırlandı.
+            # ileri yolda gidildikten sonra sıfırlanan ağırlıklara gerçek değerlerin tekrar verilmesi için geçici değişkenlerde tutuldu.
 
 
         self.X=X
@@ -29,22 +31,23 @@ class MultiP():
         self.X_bias=X_bias
         v1=np.dot(self.w1,X_bias)    # ilk katman çıkışı
         self.v1=v1
-        y1= self.act(v1,"relu")        # ilk katman çıkışı sigmoid'ten geçirildi ve ikinci katman girişi oluşturuldu.
+        y1= self.act(v1,"relu")        # ilk katman çıkışı aktivasyon'dan geçirildi ve ikinci katman girişi oluşturuldu.
         self.y1=y1
         bias_1=np.ones((y1.shape[1],1))
         y1_bias=np.concatenate([y1,bias_1],axis=0)      # bias eklendi.
         self.y1_bias = y1_bias
         v2=np.dot(self.w2,y1_bias) #* (1-dropout1)       # ikinci katman çıkışı
         self.v2=v2
-        y2=self.act(v2,"relu")             # ikinci katman çıkışı sigmoid'ten geçirildi ve üçüncü katman girişi oluşturuldu.
+        y2=self.act(v2,"relu")             # ikinci katman çıkışı aktivasyon'dan geçirildi ve üçüncü katman girişi oluşturuldu.
         self.y2=y2
         bias_2=np.ones((y2.shape[1],1))
         y2_bias=np.concatenate([y2,bias_2],axis=0)      # bias eklendi.
         self.y2_bias=y2_bias
-        v3=np.dot(self.w3,y2_bias) #* (1-dropout2)     # üçüncü katman çıkışı
+        v3=np.dot(self.w3,y2_bias)      # üçüncü katman çıkışı
         self.v3=v3
-        y3=self.act(v3,"sigmoid")             # üçüncü katman çıkışı sigmoid'ten geçirildi be nihai çıkış elde edildi.
+        y3=self.act(v3,"sigmoid")             # üçüncü katman çıkışı aktivasyon'dan geçirildi be nihai çıkış elde edildi.
         self.y3=y3
+
         if dropout1!=0 and dropout2!=0:
             self.w1[deactivated1, :], self.w2[:, deactivated1] = temp1, temp2
             self.w2[deactivated2, :], self.w3[:, deactivated2] = temp3, temp4
@@ -54,6 +57,7 @@ class MultiP():
 
     def predict(self,X,dropout1,dropout2):
 
+        # metodun eğitim aşamasındaki ileri yoldan farkı: ağırlıklar ihmal edilmiyor fakat dropout kullanılan katmanların çıkışı dropout oranı ile çarpılıyor.
 
         self.X=X
         X=X.reshape(-1,1)   # girişimiz sütun vektörüne çevrildi.
@@ -62,21 +66,21 @@ class MultiP():
         self.X_bias=X_bias
         v1=np.dot(self.w1,X_bias)    # ilk katman çıkışı
         self.v1=v1
-        y1= self.act(v1,"relu")        # ilk katman çıkışı sigmoid'ten geçirildi ve ikinci katman girişi oluşturuldu.
+        y1= self.act(v1,"relu")        # ilk katman çıkışı aktivasyon'dan geçirildi ve ikinci katman girişi oluşturuldu.
         self.y1=y1
         bias_1=np.ones((y1.shape[1],1))
         y1_bias=np.concatenate([y1,bias_1],axis=0)      # bias eklendi.
         self.y1_bias = y1_bias
         v2=np.dot(self.w2,y1_bias) * (1-dropout1)       # ikinci katman çıkışı
         self.v2=v2
-        y2=self.act(v2,"relu")             # ikinci katman çıkışı sigmoid'ten geçirildi ve üçüncü katman girişi oluşturuldu.
+        y2=self.act(v2,"relu")             # ikinci katman çıkışı aktivasyon'dan geçirildi ve üçüncü katman girişi oluşturuldu.
         self.y2=y2
         bias_2=np.ones((y2.shape[1],1))
         y2_bias=np.concatenate([y2,bias_2],axis=0)      # bias eklendi.
         self.y2_bias=y2_bias
         v3=np.dot(self.w3,y2_bias) * (1-dropout2)     # üçüncü katman çıkışı
         self.v3=v3
-        y3=self.act(v3,"sigmoid")             # üçüncü katman çıkışı sigmoid'ten geçirildi be nihai çıkış elde edildi.
+        y3=self.act(v3,"sigmoid")             # üçüncü katman çıkışı aktivasyon'dan geçirildi ve nihai çıkış elde edildi.
         self.y3=y3
         return y3
 
@@ -112,7 +116,7 @@ class MultiP():
                 error=target-out        #geri yayılım için kullanılacak olan hata
 
                 self.backProp(error)        # geri yayılım ile yerel gradyen hesapları
-                self.gradDescent(lr)       # grad Derscent ile ağırlık güncelleme
+                self.gradDescent(lr)       # grad Descent ile ağırlık güncelleme
 
                 toplam_error += (target-out)**2
             ort_kareHata = toplam_error / X.shape[0]
