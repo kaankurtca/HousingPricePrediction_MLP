@@ -1,3 +1,7 @@
+
+Proje Raporu >> YSA_ProjeFinalRaporu.pdf
+
+
 Kodlar çalıştırılırken öncelikle “Preprocessing.py” scripti çalıştırılır ve veri seti  eğitim için hazır hale gelir ve kaydedilir.
 
 “PricePredictionWithKerasMLP.py” ve “PricePredictionWithNumpyMLP.py”, “Preprocessing.py” ile hazırlanıp kaydedilen verisetini içeri aktarır ve öyle çalışır.
